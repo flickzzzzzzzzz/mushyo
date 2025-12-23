@@ -1,10 +1,29 @@
+-- MADE BY FLICKZ
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local plr = Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
 
--- NOCLIP
+-- creditos ne
+local gui = Instance.new("ScreenGui")
+gui.Name = "CreditGui"
+gui.ResetOnSpawn = false
+gui.Parent = plr:WaitForChild("PlayerGui")
+
+local txt = Instance.new("TextLabel")
+txt.Parent = gui
+txt.Size = UDim2.new(0, 220, 0, 40)
+txt.Position = UDim2.new(0, 10, 0, 10)
+txt.BackgroundTransparency = 0.3
+txt.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+txt.TextScaled = true
+txt.Font = Enum.Font.GothamBold
+txt.Text = "MADE BY FLICKZ"
+
+-- noclip em 1m
 RunService.Stepped:Connect(function()
 	for _, v in pairs(char:GetDescendants()) do
 		if v:IsA("BasePart") then
