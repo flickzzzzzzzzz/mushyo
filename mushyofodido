@@ -1,0 +1,30 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local plr = Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+
+-- NOCLIP
+RunService.Stepped:Connect(function()
+	for _, v in pairs(char:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.CanCollide = false
+		end
+	end
+end)
+
+local gifts = {
+	YellowGift = true,
+	RedGift = true,
+	GreenGift = true,
+	BlueGift = true
+}
+
+while true do
+	for _, obj in pairs(workspace.Temp:GetChildren()) do
+		if gifts[obj.Name] then
+			char:PivotTo(obj:GetPivot() + Vector3.new(0, 3, 0))
+			task.wait(0.25)
+		end
+	end
+end
