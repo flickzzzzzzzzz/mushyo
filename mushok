@@ -7,18 +7,17 @@ local TeleportService = game:GetService("TeleportService")
 local plr = Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
 
--- reinjetar UMA vez
+-- REINJETAR COM DELAY (5s)
 if queue_on_teleport then
 	queue_on_teleport([[
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/flickzzzzzzzzz/mushyo/main/mushyofodido"))()
+		task.wait(5)
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/flickzzzzzzzzz/mushyo/main/mushok"))()
 	]])
 end
 
 -- GUI
-local gui = Instance.new("ScreenGui")
+local gui = Instance.new("ScreenGui", plr.PlayerGui)
 gui.ResetOnSpawn = false
-gui.Parent = plr:WaitForChild("PlayerGui")
-
 local txt = Instance.new("TextLabel", gui)
 txt.Size = UDim2.new(0,220,0,40)
 txt.Position = UDim2.new(0,10,0,10)
@@ -40,16 +39,14 @@ noclipConn = RunService.Stepped:Connect(function()
 end)
 
 local gifts = {
-	YellowGift=true, RedGift=true, GreenGift=true, BlueGift=true
+	YellowGift=true,
+	RedGift=true,
+	GreenGift=true,
+	BlueGift=true
 }
 
-local hopping = false
-
 local function hasGifts()
-	local temp = workspace:FindFirstChild("Temp")
-	if not temp then return false end
-
-	for _,o in pairs(temp:GetChildren()) do
+	for _,o in pairs(workspace.Temp:GetChildren()) do
 		if gifts[o.Name] then
 			return true
 		end
@@ -57,30 +54,18 @@ local function hasGifts()
 	return false
 end
 
-task.spawn(function()
-	while task.wait(0.3) do
-		if hopping then return end
+while true do
+	if not hasGifts() then
+		if noclipConn then noclipConn:Disconnect() end
+		task.wait(1)
+		TeleportService:Teleport(game.PlaceId, plr)
+		break
+	end
 
-		if not hasGifts() then
-			hopping = true
-
-			if noclipConn then noclipConn:Disconnect() end
-			if gui then gui:Destroy() end
-
-			task.wait(1.5) -- ESSENCIAL (anti-crash)
-
-			pcall(function()
-				TeleportService:Teleport(game.PlaceId, plr)
-			end)
-
-			return
-		end
-
-		for _,o in pairs(workspace.Temp:GetChildren()) do
-			if gifts[o.Name] then
-				char:PivotTo(o:GetPivot() + Vector3.new(0,3,0))
-				task.wait(0.25)
-			end
+	for _,o in pairs(workspace.Temp:GetChildren()) do
+		if gifts[o.Name] then
+			char:PivotTo(o:GetPivot() + Vector3.new(0,3,0))
+			task.wait(0.25)
 		end
 	end
-end)
+end
