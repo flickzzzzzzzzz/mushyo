@@ -1,0 +1,86 @@
+-- MADE BY FLICKZ
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
+
+local plr = Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+
+-- reinjetar UMA vez
+if queue_on_teleport then
+	queue_on_teleport([[
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/flickzzzzzzzzz/mushyo/main/mushyofodido"))()
+	]])
+end
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.ResetOnSpawn = false
+gui.Parent = plr:WaitForChild("PlayerGui")
+
+local txt = Instance.new("TextLabel", gui)
+txt.Size = UDim2.new(0,220,0,40)
+txt.Position = UDim2.new(0,10,0,10)
+txt.BackgroundTransparency = 0.3
+txt.BackgroundColor3 = Color3.new(0,0,0)
+txt.TextColor3 = Color3.new(1,1,1)
+txt.TextScaled = true
+txt.Font = Enum.Font.GothamBold
+txt.Text = "MADE BY FLICKZ"
+
+-- NOCLIP
+local noclipConn
+noclipConn = RunService.Stepped:Connect(function()
+	for _,v in pairs(char:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.CanCollide = false
+		end
+	end
+end)
+
+local gifts = {
+	YellowGift=true, RedGift=true, GreenGift=true, BlueGift=true
+}
+
+local hopping = false
+
+local function hasGifts()
+	local temp = workspace:FindFirstChild("Temp")
+	if not temp then return false end
+
+	for _,o in pairs(temp:GetChildren()) do
+		if gifts[o.Name] then
+			return true
+		end
+	end
+	return false
+end
+
+task.spawn(function()
+	while task.wait(0.3) do
+		if hopping then return end
+
+		if not hasGifts() then
+			hopping = true
+
+			if noclipConn then noclipConn:Disconnect() end
+			if gui then gui:Destroy() end
+
+			task.wait(1.5) -- ESSENCIAL (anti-crash)
+
+			pcall(function()
+				TeleportService:Teleport(game.PlaceId, plr)
+			end)
+
+			return
+		end
+
+		for _,o in pairs(workspace.Temp:GetChildren()) do
+			if gifts[o.Name] then
+				char:PivotTo(o:GetPivot() + Vector3.new(0,3,0))
+				task.wait(0.25)
+			end
+		end
+	end
+end)
