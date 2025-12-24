@@ -3,11 +3,12 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 
 local plr = Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
 
--- REINJETAR COM DELAY (5s)
+-- reinjetar com DELAY DE 5s
 if queue_on_teleport then
 	queue_on_teleport([[
 		task.wait(5)
@@ -39,26 +40,38 @@ noclipConn = RunService.Stepped:Connect(function()
 end)
 
 local gifts = {
-	YellowGift=true,
-	RedGift=true,
-	GreenGift=true,
-	BlueGift=true
+	YellowGift=true, RedGift=true, GreenGift=true, BlueGift=true
 }
 
 local function hasGifts()
 	for _,o in pairs(workspace.Temp:GetChildren()) do
-		if gifts[o.Name] then
-			return true
-		end
+		if gifts[o.Name] then return true end
 	end
 	return false
 end
 
+-- SERVER HOP (outro server)
+local function hopServer()
+	if noclipConn then noclipConn:Disconnect() end
+	task.wait(1)
+
+	local url = "https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
+	local data = HttpService:JSONDecode(game:HttpGet(url))
+
+	for _,sv in ipairs(data.data) do
+		if sv.playing < sv.maxPlayers and sv.id ~= game.JobId then
+			TeleportService:TeleportToPlaceInstance(game.PlaceId, sv.id, plr)
+			return
+		end
+	end
+
+	-- fallback
+	TeleportService:Teleport(game.PlaceId, plr)
+end
+
 while true do
 	if not hasGifts() then
-		if noclipConn then noclipConn:Disconnect() end
-		task.wait(1)
-		TeleportService:Teleport(game.PlaceId, plr)
+		hopServer()
 		break
 	end
 
